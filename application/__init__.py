@@ -12,23 +12,25 @@ def page_content(url,url_verify=True):
 
 def generate_techno_park_jobs():
     url = 'https://www.technopark.org/job-search'
-    pContent = page_content(url,False)
-    jobs = []
-    if(pContent):
-        html =  BeautifulSoup(pContent,"html.parser")
-        div = html.find('div',{"id":"tableJobId"})
-        trs = div.find('table').find_all('tr',{"class":"companyList"})
-        for tr in trs:
-            tds = tr.find_all('td')
-            jobs.append({
-                'title':tds[0].contents[0].contents[0],
-                'company':tds[1].contents[0].contents[0],
-                'last_date':tds[2].contents[0],
-                'ref_link':tds[0].contents[0]['href']
-            })
-        
+    try:
+        pContent = page_content(url,False)
+        jobs = []
+        if(pContent):
+            html =  BeautifulSoup(pContent,"html.parser")
+            div = html.find('div',{"id":"tableJobId"})
+            trs = div.find('table').find_all('tr',{"class":"companyList"})
+            for tr in trs:
+                tds = tr.find_all('td')
+                jobs.append({
+                    'title':tds[0].contents[0].contents[0],
+                    'company':tds[1].contents[0].contents[0],
+                    'last_date':tds[2].contents[0],
+                    'ref_link':tds[0].contents[0]['href']
+                })
         return jobs
-            
+    except:
+        return []
+             
 def technopark_job_details(url):
     pContent = page_content(url,False)
     html = BeautifulSoup(pContent,'html.parser')
@@ -68,19 +70,22 @@ def generate_infopark_jobs():
     jobs = []
     p_index = 0
     for url in urls:
-        pContent = page_content(url,False)
-        if(pContent):
-            html =  BeautifulSoup(pContent,"html.parser")
-            divs = html.find_all('div',{"class":"joblist"})
-            for div in divs:
-                d = div.find_all('div')
-                jobs.append({
-                    'title':d[0].contents[0].string,
-                    'company':d[1].contents[0].string,
-                    'last_date':d[2].string,
-                    'ref_link':d[0].contents[0]['href']
-                })
-        p_index+=1
+        try:
+            pContent = page_content(url,False)
+            if(pContent):
+                html =  BeautifulSoup(pContent,"html.parser")
+                divs = html.find_all('div',{"class":"joblist"})
+                for div in divs:
+                    d = div.find_all('div')
+                    jobs.append({
+                        'title':d[0].contents[0].string,
+                        'company':d[1].contents[0].string,
+                        'last_date':d[2].string,
+                        'ref_link':d[0].contents[0]['href']
+                    })
+            p_index+=1
+        except:
+            print("error")
         
     return jobs
 
@@ -114,22 +119,25 @@ def infopark_job_details(url):
 
 def generate_ulpark_jobs():
     url = 'https://ulcyberpark.com/jobs/'
-    pContent = page_content(url,False)
-    jobs = []
-    if(pContent):
-        html =  BeautifulSoup(pContent,"html.parser")
-        div = html.find('div',{"class":"table-job"})
-        trs = div.find('table').find_all('tr')
-        for tr in trs:
-            tds = tr.find_all('td')
-            jobs.append({
-                'title':tds[0].contents[0].string.strip(),
-                'company':tds[1].contents[0].string,
-                'last_date':tds[0].contents[2].string.split(':')[1].strip(),
-                'ref_link':tds[2].contents[0]['href']
-            })
-        
-        return jobs
+    try:
+        pContent = page_content(url,False)
+        jobs = []
+        if(pContent):
+            html =  BeautifulSoup(pContent,"html.parser")
+            div = html.find('div',{"class":"table-job"})
+            trs = div.find('table').find_all('tr')
+            for tr in trs:
+                tds = tr.find_all('td')
+                jobs.append({
+                    'title':tds[0].contents[0].string.strip(),
+                    'company':tds[1].contents[0].string,
+                    'last_date':tds[0].contents[2].string.split(':')[1].strip(),
+                    'ref_link':tds[2].contents[0]['href']
+                })
+            
+            return jobs
+    except:
+        return []
 
 def ulpark_job_details(url):
     pContent = page_content(url,False)
@@ -152,24 +160,27 @@ def ulpark_job_details(url):
 
 def generate_cyberpark_jobs():
     url = 'http://www.cyberparkkerala.org/jm-ajax/get_listings/'
-    pContent = page_content(url,False)
-    jobs = []
-    if(pContent):
-        resJson = json.loads(pContent)
-        html =  BeautifulSoup(resJson['html'],"html.parser")
-        lis = html.find_all('li',{"class":"job_listing"})
-        for li in lis:
-            tds = li.find('a').find('div')
-            date = li.find('a').find('ul')
-            contains = tds.contents
-            jobs.append({
-                'title':contains[1].string,
-                'company':contains[3].contents[1].string,
-                'last_date':date.contents[3].contents[0].string,
-                'ref_link':li.find('a')['href']
-            })
-        
-        return jobs
+    try:
+        pContent = page_content(url,False)
+        jobs = []
+        if(pContent):
+            resJson = json.loads(pContent)
+            html =  BeautifulSoup(resJson['html'],"html.parser")
+            lis = html.find_all('li',{"class":"job_listing"})
+            for li in lis:
+                tds = li.find('a').find('div')
+                date = li.find('a').find('ul')
+                contains = tds.contents
+                jobs.append({
+                    'title':contains[1].string,
+                    'company':contains[3].contents[1].string,
+                    'last_date':date.contents[3].contents[0].string,
+                    'ref_link':li.find('a')['href']
+                })
+            
+            return jobs
+    except:
+        return []
 
 def cyberpark_job_details(url):
     pContent = page_content(url,False)
