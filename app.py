@@ -12,23 +12,23 @@ def index():
 @app.route('/technopark/jobs', methods=['GET'])
 def technopark_job():
     jobs = core.generate_techno_park_jobs()
-    return json.dumps({'status':True,'job_list':details,'message':''})
+    return json.dumps({'status':True,'job_list':jobs,'message':''})
 
 @app.route('/infopark/jobs', methods=['GET'])
 def infopark_job():
     jobs = core.generate_infopark_jobs()
-    return json.dumps({'status':True,'job_list':details,'message':''})
+    return json.dumps({'status':True,'job_list':jobs,'message':''})
 
 @app.route('/ulpark/jobs', methods=['GET'])
 def ulpark_job():
     jobs = core.ulparkjobs()
-    return json.dumps({'status':True,'job_list':details,'message':''})
+    return json.dumps({'status':True,'job_list':jobs,'message':''})
 
 
 @app.route('/cyberpark/jobs', methods=['GET'])
 def cyberpark_job():
     jobs = core.generate_cyberpark_jobs()
-    return json.dumps({'status':True,'job_list':details,'message':''})
+    return json.dumps({'status':True,'job_list':jobs,'message':''})
 
 
 

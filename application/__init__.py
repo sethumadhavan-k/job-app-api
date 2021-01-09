@@ -184,12 +184,11 @@ def generate_cyberpark_jobs():
 
 def cyberpark_job_details(url):
     pContent = page_content(url,False)
-    html = BeautifulSoup(pContent,'html.parser')
     try:
+        html = BeautifulSoup(pContent,'html.parser')
         job_details = html.find('div',{"class":"single_job_listing"})
         company = job_details.find('div',{"class":"company"})
         description = job_details.find('div',{"class":"job_description"})
-        print(job_details.find('div',{"class":"job_application"}).div.find('p').prettify())
 
         details = {
             "success" : True,
