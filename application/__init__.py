@@ -25,7 +25,7 @@ def generate_techno_park_jobs():
                     'title':tds[0].contents[0].contents[0],
                     'company':tds[1].contents[0].contents[0],
                     'last_date':tds[2].contents[0],
-                    'ref_link':tds[0].contents[0]['href']
+                    'ref_link':"https://www.technopark.org/"+tds[0].contents[0]['href']
                 })
         return jobs
     except:
@@ -49,7 +49,8 @@ def technopark_job_details(url):
             "posted_on" :divs[2].contents[3].string,
             "closing_on":divs[3].contents[3].string,
             "email"     :divs[4].contents[3].string,
-            "description"   : divs[6].prettify()
+            "description"   : divs[6].prettify(),
+            "apply"     :"",
         }
     except:
         details = { "success":False }
@@ -108,8 +109,11 @@ def infopark_job_details(url):
             "website"       : website.string,
             "logo"          : logo['src'],
             "title"         : job_details[1].string,
+            "posted_on"     : "",
+            "closing_on"    : "",
             "email"         : job_details[3].string.split(':')[1].strip(),
             "description"   : job_details[2].prettify(),
+            "apply"         :""
         }
     except:
         details = { "success":False }
@@ -145,12 +149,17 @@ def ulpark_job_details(url):
     try:
         job_details = html.find('div',{"class":"job_border"})
         details = {
-            "success":True,
-            "title":job_details.find('h2',{"class":"main_title_head"}).string,
+            "success"   :True,
+            "title"     :job_details.find('h2',{"class":"main_title_head"}).string,
+            "posted_on" :"",
             "closing_on":job_details.find('h4',{"class":"sub_title"}).string.split(":")[1],
-            "email":job_details.find('h4',{"class":"email_title"}).find('a').string,
-            "logo":job_details.find('img',{"class":"img_lt"})['src'],
-            "description":job_details.find('div',{"class":"c2_left_padd"}).prettify()
+            "email"     :job_details.find('h4',{"class":"email_title"}).find('a').string,
+            "logo"      :job_details.find('img',{"class":"img_lt"})['src'],
+            "description":job_details.find('div',{"class":"c2_left_padd"}).prettify(),
+            "apply"     :"",
+            "address"   :"",
+            "company"   : "",
+            "website"   : "",
         }
     except:
         details = { "success":False }
@@ -191,13 +200,18 @@ def cyberpark_job_details(url):
         description = job_details.find('div',{"class":"job_description"})
 
         details = {
-            "success" : True,
-            "company" : company.find('p',{"class":"name"}).contents[3].string,
-            "website" : company.find('p',{"class":"name"}).contents[1]['href'],
-            "logo"    : company.find('img',{"class":"company_logo"})['src'],
-            "title"   : description.find('p').string,
+            "success"   : True,
+            "company"   : company.find('p',{"class":"name"}).contents[3].string,
+            "website"   : company.find('p',{"class":"name"}).contents[1]['href'],
+            "logo"      : company.find('img',{"class":"company_logo"})['src'],
+            "title"     : description.find('p').string,
+            "address"   : "",
             "description" : description.prettify(),
-            "apply" : job_details.find('div',{"class":"job_application"}).div.find('p').prettify()
+            "apply"     : job_details.find('div',{"class":"job_application"}).div.find('p').prettify(),
+            "email"     : "",
+            "posted_on" : "",
+            "closing_on": ""
+
         }
     except:
         details = { "success": False}
