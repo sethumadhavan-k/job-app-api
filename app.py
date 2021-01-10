@@ -21,7 +21,7 @@ def infopark_job():
 
 @app.route('/ulpark/jobs', methods=['GET'])
 def ulpark_job():
-    jobs = core.ulparkjobs()
+    jobs = core.generate_ulpark_jobs()
     return json.dumps({'status':True,'job_list':jobs,'message':''})
 
 
