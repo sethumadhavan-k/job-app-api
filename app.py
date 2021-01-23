@@ -104,12 +104,12 @@ def search_job():
         dbcursor.execute(sql)
     
         jobs = dbcursor.fetchall()
-        job_list.append(jobs)
+        job_list.extend(jobs)
 
         sql = "SELECT * FROM itpark_jobs WHERE title LIKE '%{}%' OR description LIKE '%{}%'".format(search_key,search_key)
         dbcursor.execute(sql)
         jobs = dbcursor.fetchall()
-        job_list.append(jobs)
+        job_list.extend(jobs)
 
         return json.dumps({'status':True,'job_list':job_list,'message':''})
     except Exception as e:
