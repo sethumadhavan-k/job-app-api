@@ -52,7 +52,7 @@ def park_job():
         parameter = (req_data['park'],)
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = first + 10
+            last = 10 #first + 10
             sql = "SELECT * FROM itpark_jobs WHERE park = %s LIMIT {},{}".format(first,last)
 
         dbcursor.execute(sql,parameter)
@@ -68,7 +68,7 @@ def mnc_job():
         parameter = (req_data['mnc'],)
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = first + 10
+            last = 10 #first + 10
             sql = "SELECT * FROM mnc_jobs WHERE mnc = %s LIMIT {},{}".format(first,last)
 
         dbcursor.execute(sql,parameter)
@@ -83,7 +83,7 @@ def other_job():
         sql = "SELECT * FROM other_jobs"
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = first + 10
+            last = 10 #first + 10
             sql = "SELECT * FROM mnc_jobs LIMIT {},{}".format(first,last)
 
         dbcursor.execute(sql)
