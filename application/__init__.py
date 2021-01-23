@@ -1,6 +1,56 @@
 import requests as req
 from bs4 import BeautifulSoup
 import json
+import os
+import mysql.connector
+
+
+
+def get_db():
+    return mysql.connector.connect(host="localhost",user="root",password="password",database="job_app")
+
+def save_park_to_db(park,data):
+    con = get_db()
+    cursor = con.cursor()
+    sql = "DELETE FROM itpark_jobs WHERE park = %s"
+    cursor.execute(sql,(park,))
+    con.commit()
+    for d in data:
+        try:
+            if d['success'] == True:
+                sql = 'INSERT INTO itpark_jobs (title,description,posted_on,closing_on,company,website,email,logo,apply,address,park,ref_link) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' 
+                a = cursor.execute(sql,(
+                    str(d['title']),
+                    str(d['description']),
+                    str(d['posted_on']),
+                    str(d['closing_on']),
+                    str(d['company']),
+                    str(d['website']),
+                    str(d['email']),
+                    str(d['logo']),
+                    str(d['apply']),
+                    str(d['address']),park,"",))
+                
+                con.commit()
+        except Exception as e:
+            print(str(e))
+    con.close()
+
+def save_mnc_to_db(park,data):
+    con = get_db()
+    cursor = con.cursor()
+    sql = "DELETE FROM mnc_jobs WHERE mnc = %s"
+    cursor.execute(sql,(park,))
+    con.commit()
+    for d in data:
+        print(d.keys())
+        try:
+            sql = "INSERT INTO mnc_jobs (title,job_code,exp,mnc,ref_link) VALUES (%s, %s, %s, %s, %s)"
+            a = cursor.execute(sql,(str(d['title']),str(d['job_code']),str(d['exp']),park,str(d['ref_link']),))
+            con.commit()
+        except Exception as e:
+            print(str(e))
+    con.close()
 
 def page_content(url,url_verify=True):
     res = req.get(url, verify=url_verify)
@@ -57,6 +107,15 @@ def technopark_job_details(url):
 
     return details
 
+def technopark_save():
+    jobs = generate_techno_park_jobs()
+    job_details = []
+    for job in jobs:
+        details = technopark_job_details(job['ref_link'])
+        job_details.append(details)
+    save_park_to_db('technopark',job_details)
+        
+
 
 
 def generate_infopark_jobs():
@@ -94,7 +153,6 @@ def infopark_job_details(url):
     pContent = page_content(url,False)
     html = BeautifulSoup(pContent,'html.parser')
     try:
-
         company = html.find('div',{"class":"company-list-details"})
         logo = company.find('div',{"class":"company-list-details-logo"}).find('img')
         name = company.find_all('div',{"class":"address_details"})[0].find('h5')
@@ -119,6 +177,13 @@ def infopark_job_details(url):
         details = { "success":False }
     return details
 
+def infopark_save():
+    jobs = generate_infopark_jobs()
+    job_details = []
+    for job in jobs:
+        details = infopark_job_details(job['ref_link'])
+        job_details.append(details)
+    save_park_to_db('infopark',job_details)
 
 
 def generate_ulpark_jobs():
@@ -165,6 +230,14 @@ def ulpark_job_details(url):
         details = { "success":False }
 
     return details
+
+def ulpark_save():
+    jobs = generate_ulpark_jobs()
+    job_details = []
+    for job in jobs:
+        details = ulpark_job_details(job['ref_link'])
+        job_details.append(details)
+    save_park_to_db('ulpark',job_details)
 
 
 def generate_cyberpark_jobs():
@@ -218,3 +291,66 @@ def cyberpark_job_details(url):
 
     return details
 
+def cyberpark_save():
+    jobs = generate_cyberpark_jobs()
+    job_details = []
+    for job in jobs:
+        details = cyberpark_job_details(job['ref_link'])
+        job_details.append(details)
+    save_park_to_db('cyberpark',job_details)
+
+
+def generate_qburst():
+    url = 'https://www.qburst.com/company/career/openings/'
+    
+    try:
+        pContent = page_content(url,False)
+        jobs = []
+        if(pContent):
+            html =  BeautifulSoup(pContent,"html.parser")
+            ul = html.find('ul',{"class":"careerlists"})
+            lis = ul.find_all('li',{"class":"clearfix"})
+            for li in lis:
+                # tds = li.find('p',{"class":"jobtitle"}).
+                # date = li.find('a').find('ul')
+                # contains = tds.contents
+                jobs.append({
+                    'title':li.find('p',{"class":"jobtitle"}).string,
+                    'job_code':li.find('p',{"class":"jobC"}).string,
+                    'exp':li.find('p',{"class":"expce"}).string,
+                    'ref_link':"https://www.qburst.com/company/career/openings/"
+                })
+            return jobs
+    except:
+        return []
+
+def save_qburst():
+    jobs = generate_qburst()
+    save_mnc_to_db('qburst',jobs)
+
+
+
+def generate_tcs():
+    url = 'https://www.qburst.com/company/career/openings/'
+    
+    try:
+        pContent = page_content(url,False)
+        jobs = []
+        if(pContent):
+            html =  BeautifulSoup(pContent,"html.parser")
+            ul = html.find('ul',{"class":"careerlists"})
+            lis = ul.find_all('li',{"class":"clearfix"})
+            for li in lis:
+                # tds = li.find('p',{"class":"jobtitle"}).
+                # date = li.find('a').find('ul')
+                # contains = tds.contents
+                jobs.append({
+                    'title':li.find('p',{"class":"jobtitle"}).string,
+                    'job_code':li.find('p',{"class":"jobC"}).string,
+                    'exp ':li.find('p',{"class":"expce"}).string,
+                    'ref_link':"https://www.qburst.com/company/career/openings/"
+                })
+            save_mnc_to_db(jobs)
+            return jobs
+    except:
+        return []
