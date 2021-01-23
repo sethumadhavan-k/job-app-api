@@ -85,7 +85,7 @@ def other_job():
         if('page' in req_data):
             first = int(req_data['page']) * 10
             last = 10 #first + 10
-            sql = "SELECT * FROM mnc_jobs LIMIT {},{}".format(first,last)
+            sql = "SELECT * FROM other_jobs LIMIT {},{}".format(first,last)
 
         dbcursor.execute(sql)
         jobs = dbcursor.fetchall()
