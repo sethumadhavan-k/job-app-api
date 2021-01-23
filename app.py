@@ -80,6 +80,7 @@ def mnc_job():
 @app.route('/other/jobs', methods=['POST'])
 def other_job():
     try:
+        req_data = request.get_json()
         sql = "SELECT * FROM other_jobs"
         if('page' in req_data):
             first = int(req_data['page']) * 10
