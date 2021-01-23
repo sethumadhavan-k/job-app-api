@@ -28,7 +28,7 @@ def parks():
             'key':p['park'],
             'display':p['park'].title()
         })
-    return json.dumps({'status':True,'it_parks':plist,'messagddse':''})
+    return json.dumps({'status':True,'it_parks':plist,'message':''})
 
 
 @app.route('/mncs', methods=['GET'])
