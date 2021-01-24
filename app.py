@@ -18,31 +18,36 @@ def index():
 
 @app.route('/itparks', methods=['GET'])
 def parks():
-    sql = "SELECT DISTINCT park FROM itpark_jobs"
-    dbcursor.execute(sql)
-    plist = []
-    parks = dbcursor.fetchall()
-    for p in parks:
-        print(p)
-        plist.append({
-            'key':p['park'],
-            'display':p['park'].title()
-        })
-    return json.dumps({'status':True,'it_parks':plist,'message':''})
-
+    try:
+        sql = "SELECT DISTINCT park FROM itpark_jobs"
+        dbcursor.execute(sql)
+        plist = []
+        parks = dbcursor.fetchall()
+        for p in parks:
+            print(p)
+            plist.append({
+                'key':p['park'],
+                'display':p['park'].title()
+            })
+        return json.dumps({'status':True,'it_parks':plist,'message':''})
+    except Exception as e:
+        return json.dumps({'status':False,'it_parks':[],'message':str(e)})
 
 @app.route('/mncs', methods=['GET'])
 def mncs():
-    sql = "SELECT DISTINCT mnc FROM mnc_jobs"
-    dbcursor.execute(sql)
-    mncs = dbcursor.fetchall()
-    plist = []
-    for p in mncs:
-        plist.append({
-            'key':p['mnc'],
-            'display':p['mnc'].title()
-        })
-    return json.dumps({'status':True,'mncs':plist,'message':''})
+    try:
+        sql = "SELECT DISTINCT mnc FROM mnc_jobs"
+        dbcursor.execute(sql)
+        mncs = dbcursor.fetchall()
+        plist = []
+        for p in mncs:
+            plist.append({
+                'key':p['mnc'],
+                'display':p['mnc'].title()
+            })
+        return json.dumps({'status':True,'mncs':plist,'message':''})
+    except Exception as e:
+        return json.dumps({'status':False,'mncs':[],'message':str(e)})
 
 @app.route('/itpark/jobs', methods=['POST'])
 def park_job():
