@@ -9,6 +9,7 @@ con =  mysql.connector.connect(host="localhost",user="root",password="password",
 
 dbcursor = con.cursor(dictionary=True)
 
+limit = 30
 
 
 @app.route('/', methods=['GET'])
@@ -56,7 +57,7 @@ def park_job():
         sql = "SELECT * FROM itpark_jobs WHERE park = %s"
         parameter = (req_data['park'],)
         if('page' in req_data):
-            first = int(req_data['page']) * 10
+            first = int(req_data['page']) * limit
             last = 10 #first + 10
             sql = "SELECT * FROM itpark_jobs WHERE park = %s LIMIT {},{}".format(first,last)
 
@@ -72,7 +73,7 @@ def mnc_job():
         sql = "SELECT * FROM mnc_jobs WHERE mnc = %s"
         parameter = (req_data['mnc'],)
         if('page' in req_data):
-            first = int(req_data['page']) * 10
+            first = int(req_data['page']) * limit
             last = 10 #first + 10
             sql = "SELECT * FROM mnc_jobs WHERE mnc = %s LIMIT {},{}".format(first,last)
 
@@ -88,7 +89,7 @@ def other_job():
         req_data = request.get_json()
         sql = "SELECT * FROM other_jobs"
         if('page' in req_data):
-            first = int(req_data['page']) * 10
+            first = int(req_data['page']) * limit
             last = 10 #first + 10
             sql = "SELECT * FROM other_jobs LIMIT {},{}".format(first,last)
 
