@@ -33,7 +33,7 @@ def parks():
     try:
         sql = "SELECT DISTINCT park FROM itpark_jobs"
         plist = []
-        parks = 
+        parks = query(sql)
         for p in parks:
             plist.append({
                 'key':p['park'],
@@ -59,7 +59,7 @@ def mncs():
         
     except Exception as e:
         res = {'status':False,'mncs':[],'message':str(e)}
-    return json.dumps()
+    return json.dumps(res)
 
 @app.route('/itpark/jobs', methods=['POST'])
 def park_job():
@@ -91,9 +91,9 @@ def mnc_job():
             sql = "SELECT * FROM mnc_jobs WHERE mnc = %s LIMIT {},{}".format(first,last)
 
         jobs = query(sql,parameter)
-        res = {'status':True,'job_list':jobs,'message':''}
+        res = {'status':True,'job_list':jobs,'message':'','length':len(jobs)}
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e)}
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
     return json.dumps(res)
     
 @app.route('/other/jobs', methods=['POST'])
@@ -107,9 +107,9 @@ def other_job():
             sql = "SELECT * FROM other_jobs LIMIT {},{}".format(first,last)
 
         jobs = query(sql)
-        res = {'status':True,'job_list':jobs,'message':''}
+        res = {'status':True,'job_list':jobs,'message':'','length':len(jobs)}
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e)}
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
 
     return json.dumps(res)
 
@@ -128,10 +128,11 @@ def search_job():
         jobs = query(sql)
         job_list.extend(jobs)
 
-        res = {'status':True,'job_list':job_list,'message':''}
+        res = {'status':True,'job_list':job_list,'message':'','length':len(job_list)}
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e)}
-    return return json.dumps(res)
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
+    return json.dumps(res)
 
 if __name__ == '__main__':
     app.run()
+
