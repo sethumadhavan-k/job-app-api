@@ -94,11 +94,17 @@ def mnc_job():
             sql = "SELECT * FROM mnc_jobs WHERE mnc = %s LIMIT {},{}".format(first,last)
 
         jobs = query(sql,parameter)
+<<<<<<< HEAD
 
         res = {'status':True,'job_list':jobs,'message':'','job_count':len(jobs)}
     except Exception as e:
         res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
 
+=======
+        res = {'status':True,'job_list':jobs,'message':'','length':len(jobs)}
+    except Exception as e:
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
+>>>>>>> 3c8664689880e456386621189eb03b8e3929e147
     return json.dumps(res)
     
 @app.route('/other/jobs', methods=['POST'])
@@ -112,6 +118,12 @@ def other_job():
             sql = "SELECT * FROM other_jobs LIMIT {},{}".format(first,last)
 
         jobs = query(sql)
+<<<<<<< HEAD
+=======
+        res = {'status':True,'job_list':jobs,'message':'','length':len(jobs)}
+    except Exception as e:
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
+>>>>>>> 3c8664689880e456386621189eb03b8e3929e147
 
         res = {'status':True,'job_list':jobs,'message':'','job_count':len(jobs)}
     except Exception as e:
@@ -133,9 +145,15 @@ def search_job():
         jobs = query(sql)
         job_list.extend(jobs)
 
+<<<<<<< HEAD
         res = {'status':True,'job_list':job_list,'message':'','job_count':len(job_list)}
     except Exception as e:
         res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
+=======
+        res = {'status':True,'job_list':job_list,'message':'','length':len(job_list)}
+    except Exception as e:
+        res = {'status':False,'job_list':[],'message':str(e),'length':0}
+>>>>>>> 3c8664689880e456386621189eb03b8e3929e147
     return json.dumps(res)
 
 if __name__ == '__main__':
