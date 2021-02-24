@@ -1,29 +1,15 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import application as core
 import json
 import mysql.connector
 
-LIMIT = 30
-
 app = Flask(__name__)
 
+con =  mysql.connector.connect(host="localhost",user="root",password="password",database="job_app")
 
-def query(sql,parameter=None):
-    con =  mysql.connector.connect(host="localhost",user="root",password="password",database="job_app")
-    dbcursor = con.cursor(dictionary=True)
-    if parameter == None:
-        dbcursor.execute(sql)
-    else:
-        dbcursor.execute(sql,parameter)
-    data = dbcursor.fetchall()
-    dbcursor.close()
-    con.close()
-    return data
+dbcursor = con.cursor(dictionary=True)
 
-
-@app.route('/post-images/<path:filename>')
-def post_images(filename):
-    return send_from_directory('post-img',filename)
+limit = 30
 
 
 @app.route('/', methods=['GET'])
@@ -35,34 +21,34 @@ def index():
 def parks():
     try:
         sql = "SELECT DISTINCT park FROM itpark_jobs"
+        dbcursor.execute(sql)
         plist = []
-        parks = query(sql)
+        parks = dbcursor.fetchall()
         for p in parks:
+            print(p)
             plist.append({
                 'key':p['park'],
                 'display':p['park'].title()
             })
-        res = {'status':True,'it_parks':plist,'message':''}
+        return json.dumps({'status':True,'it_parks':plist,'message':''})
     except Exception as e:
-        res = {'status':False,'it_parks':[],'message':str(e)}
-    return json.dumps(res)
+        return json.dumps({'status':False,'it_parks':[],'message':str(e)})
 
 @app.route('/mncs', methods=['GET'])
 def mncs():
     try:
         sql = "SELECT DISTINCT mnc FROM mnc_jobs"
-        mncs = query(sql)
+        dbcursor.execute(sql)
+        mncs = dbcursor.fetchall()
         plist = []
         for p in mncs:
             plist.append({
                 'key':p['mnc'],
                 'display':p['mnc'].title()
             })
-        res = {'status':True,'mncs':plist,'message':''}
-        
+        return json.dumps({'status':True,'mncs':plist,'message':''})
     except Exception as e:
-        res = {'status':False,'mncs':[],'message':str(e)}
-    return json.dumps(res)
+        return json.dumps({'status':False,'mncs':[],'message':str(e)})
 
 @app.route('/itpark/jobs', methods=['POST'])
 def park_job():
@@ -72,16 +58,14 @@ def park_job():
         parameter = (req_data['park'],)
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = LIMIT #first + 10
+            last = limit #first + 10
             sql = "SELECT * FROM itpark_jobs WHERE park = %s LIMIT {},{}".format(first,last)
 
-        
-        jobs = query(sql,parameter)
-        res = {'status':True,'job_list':jobs,'message':'','job_count':len(jobs)}
+        dbcursor.execute(sql,parameter)
+        jobs = dbcursor.fetchall()
+        return json.dumps({'status':True,'job_list':jobs,'message':''})
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
-    return json.dumps(res)
-
+        return json.dumps({'status':False,'job_list':[],'message':str(e)})
 @app.route('/mnc/jobs', methods=['POST'])
 def mnc_job():
     try:
@@ -90,17 +74,15 @@ def mnc_job():
         parameter = (req_data['mnc'],)
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = LIMIT #first + 10
+            last = limit #first + 10
             sql = "SELECT * FROM mnc_jobs WHERE mnc = %s LIMIT {},{}".format(first,last)
 
-        jobs = query(sql,parameter)
-
-        res = {'status':True,'job_list':jobs,'message':'','job_count':len(jobs)}
+        dbcursor.execute(sql,parameter)
+        jobs = dbcursor.fetchall()
+        return json.dumps({'status':True,'job_list':jobs,'message':''})
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
+        return json.dumps({'status':False,'job_list':[],'message':str(e)})
 
-    return json.dumps(res)
-    
 @app.route('/other/jobs', methods=['POST'])
 def other_job():
     try:
@@ -108,15 +90,14 @@ def other_job():
         sql = "SELECT * FROM other_jobs"
         if('page' in req_data):
             first = int(req_data['page']) * 10
-            last = LIMIT #first + 10
+            last = limit #first + 10
             sql = "SELECT * FROM other_jobs LIMIT {},{}".format(first,last)
 
-        jobs = query(sql)
-
-        res = {'status':True,'job_list':jobs,'message':'','job_count':len(jobs)}
+        dbcursor.execute(sql)
+        jobs = dbcursor.fetchall()
+        return json.dumps({'status':True,'job_list':jobs,'message':''})
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
-    return json.dumps(res)
+        return json.dumps({'status':False,'job_list':[],'message':str(e)})
 
 @app.route('/job/search', methods=['POST'])
 def search_job():
@@ -124,20 +105,21 @@ def search_job():
         req_data = request.get_json()
         search_key = req_data['search']
         job_list =[]
-        
         sql = "SELECT * FROM other_jobs WHERE title LIKE '%{}%' OR description LIKE '%{}%'".format(search_key,search_key)
-        jobs = query(sql)
+        print(sql)
+        dbcursor.execute(sql)
+    
+        jobs = dbcursor.fetchall()
         job_list.extend(jobs)
 
         sql = "SELECT * FROM itpark_jobs WHERE title LIKE '%{}%' OR description LIKE '%{}%'".format(search_key,search_key)
-        jobs = query(sql)
+        dbcursor.execute(sql)
+        jobs = dbcursor.fetchall()
         job_list.extend(jobs)
 
-        res = {'status':True,'job_list':job_list,'message':'','job_count':len(job_list)}
+        return json.dumps({'status':True,'job_list':job_list,'message':''})
     except Exception as e:
-        res = {'status':False,'job_list':[],'message':str(e),'job_count':0}
-    return json.dumps(res)
+        return json.dumps({'status':False,'job_list':[],'message':str(e)})
 
 if __name__ == '__main__':
     app.run()
-
